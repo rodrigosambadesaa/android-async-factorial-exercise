@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Factorial asíncrono</string>
+    <string name="screen_title">Factorial asíncrono</string>
+    <string name="screen_description">Calcula factoriales fuera del hilo principal sin bloquear la interfaz.</string>
+    <string name="number_label">Número entero (0–10.000)</string>
+    <string name="number_hint">Por ejemplo, 100</string>
+    <string name="calculate">Calcular factorial</string>
+    <string name="calculating">Calculando…</string>
+    <string name="result_label">Resultado</string>
+    <string name="result_empty">El resultado aparecerá aquí.</string>
+    <string name="error_empty">Introduzca un número.</string>
+    <string name="error_invalid">Introduzca un entero válido.</string>
+    <string name="error_negative">El factorial no está definido para enteros negativos.</string>
+    <string name="error_too_large">El máximo admitido en esta demo es 10.000.</string>
+    <string name="error_calculation">No se pudo completar el cálculo.</string>
+</resources>
