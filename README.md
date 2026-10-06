@@ -1,30 +1,49 @@
 # Android Async Factorial Exercise
 
-Modernización de un ejercicio Android resuelto originalmente en 2018: cálculo de factoriales con trabajo en segundo plano.
+Modernización de un ejercicio Android de 2018: cálculo exacto de factoriales
+sin bloquear el hilo principal.
 
-## Objetivo
+## Implementación actual
 
-Mostrar de forma pequeña y verificable cómo ejecutar una operación de CPU fuera del hilo principal sin conservar referencias inseguras a una `Activity`.
-
-La solución original empleaba `AsyncTask`, que era coherente con el temario y las APIs de la época. Esta revisión mantiene **Java** y el mismo objetivo pedagógico, pero sustituye el patrón obsoleto por concurrencia estándar de Java.
-
-## Mejoras principales
-
-- `ExecutorService` para el cálculo en background.
-- `Handler(Looper.getMainLooper())` para publicar el resultado en UI.
+- Prime Swing para calcular la parte impar de `n!` mediante factorización
+  prima.
+- Restauración de todas las potencias de dos con un único `shiftLeft`.
+- Árbol equilibrado de productos `BigInteger`, evitando la multiplicación
+  secuencial cada vez más desequilibrada.
+- Comprobaciones de cancelación durante la criba, los swings recursivos y los
+  productos.
+- `ExecutorService` para trabajar fuera del hilo principal.
+- `Handler(Looper.getMainLooper())` para publicar el resultado en la interfaz.
 - Cancelación al destruir la `Activity`.
-- `FactorialCalculator` independiente de Android y cubierto con pruebas.
-- `BigInteger` para resultados arbitrariamente grandes dentro del límite de la demo.
-- Validación de vacío, formato, negativos y valores excesivos.
-- View Binding.
-- Estado de carga y bloqueo temporal de controles para impedir tareas duplicadas.
-- Textos en recursos Android.
-- AndroidX actual y configuración de compilación moderna.
-- GitHub Actions para tests, lint y build.
+- View Binding, validación y estado de carga.
 
-## Límites deliberados
+Prime Swing es una familia de algoritmos específicamente diseñada para
+factoriales grandes. En esta aplicación se usa una variante monohilo porque el
+cálculo completo ya se ejecuta en el executor de background y el límite móvil
+de 10.000 no justifica crear más trabajadores.
 
-La aplicación admite valores entre **0 y 10.000**. Matemáticamente el factorial existe para enteros no negativos mayores, pero una demo móvil que aceptase entradas arbitrarias permitiría solicitar cálculos y representaciones decimales desproporcionados en CPU y memoria.
+## Límite defensivo
+
+La interfaz acepta enteros entre **0 y 10.000**. `10000!` tiene 35.660 dígitos;
+permitir entradas sin límite en una aplicación móvil facilitaría solicitudes
+desproporcionadas en CPU, memoria y renderizado. El límite no procede del
+algoritmo ni de `BigInteger`, sino de la responsabilidad de la interfaz.
+
+## Pruebas
+
+Las pruebas unitarias:
+
+- comparan Prime Swing con un producto secuencial independiente de 0 a 1.000;
+- verifican el número de dígitos y el prefijo conocido de `10000!`;
+- comprueban negativos, exceso del límite y cancelación por interrupción.
+
+```bash
+gradle testDebugUnitTest
+gradle lintDebug
+gradle assembleDebug
+```
+
+GitHub Actions ejecuta las tres tareas en cada `push` y `pull_request`.
 
 ## Stack
 
@@ -36,20 +55,6 @@ La aplicación admite valores entre **0 y 10.000**. Matemáticamente el factoria
 - AndroidX AppCompat 1.8.0
 - JUnit 4.13.2
 
-## Comandos
-
-```bash
-gradle testDebugUnitTest
-gradle lintDebug
-gradle assembleDebug
-```
-
-El workflow de CI instala explícitamente Gradle 9.5.0, de modo que el repositorio no depende de un wrapper binario heredado. Si se desea añadir el wrapper estándar al clonar el proyecto, puede generarse con `gradle wrapper --gradle-version 9.5.0`.
-
-## Origen y revisión
-
-El proyecto parte del ejercicio `Ejercicio2AsyncTask` conservado en la carpeta académica de Google Drive. La evaluación técnica detallada de aquella solución y la motivación de cada cambio están en [`docs/ORIGINAL_REVIEW.md`](docs/ORIGINAL_REVIEW.md).
-
-## Conectividad
-
-Este ejercicio **no usa red**, por lo que no incorpora ninguna utilidad de conectividad. Los ejercicios Android que sí necesiten conectividad deben integrar el Gist indicado para esa finalidad, en lugar de añadir comprobaciones artificiales aquí.
+El enunciado original permanece en [`ENUNCIADO.md`](ENUNCIADO.md) y la revisión
+histórica de la solución con `AsyncTask` en
+[`docs/ORIGINAL_REVIEW.md`](docs/ORIGINAL_REVIEW.md).
